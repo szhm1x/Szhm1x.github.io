@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Henderson Sánchez · Backend Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030507;
+  --bg1:#060a0f;
+  --bg2:#080d14;
+  --card:#0a1018;
+  --b1:#111e2b;
+  --b2:#1a2e42;
+  --b3:#254159;
+  --g:#00ff88;
+  --g2:#00cc6a;
+  --gd:rgba(0,255,136,.06);
+  --am:#f0a500;
+  --bl:#4db8ff;
+  --re:#ff4466;
+  --t:#7a96b0;
+  --t1:#a8c0d6;
+  --t2:#d4e5f2;
+  --t3:#f0f7ff;
+  --lo:#2a4460;
+  --mono:'Geist Mono',monospace;
+  --serif:'Instrument Serif',serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t);font-family:var(--mono);overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+#c{position:fixed;width:8px;height:8px;background:var(--g);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .15s,height .15s}
+#cr{position:fixed;width:32px;height:32px;border:1px solid var(--g);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);opacity:.3;transition:width .3s,height .3s,opacity .3s}
+
+/* NOISE */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9990;opacity:.4;
+background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E")}
+
+/* GRID */
+.gbg{position:fixed;inset:0;z-index:0;pointer-events:none;
+background-image:linear-gradient(rgba(0,255,136,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,.018) 1px,transparent 1px);
+background-size:52px 52px}
+
+/* ══ NAV ══ */
+nav{position:fixed;top:0;left:0;right:0;z-index:300;
+display:flex;align-items:center;justify-content:space-between;padding:.85rem 3.5rem;
+border-bottom:1px solid var(--b1);background:rgba(3,5,7,.88);backdrop-filter:blur(20px)}
+.nl{font-size:.62rem;color:var(--g);letter-spacing:.2em;display:flex;align-items:center;gap:.5rem}
+.nl span{color:var(--lo)}
+.nm{display:flex;gap:2.2rem;list-style:none}
+.nm a{font-size:.6rem;color:var(--lo);text-decoration:none;letter-spacing:.22em;text-transform:uppercase;transition:color .2s}
+.nm a:hover{color:var(--g)}
+.ns{display:flex;align-items:center;gap:.5rem;font-size:.6rem;color:var(--lo)}
+.ns-dot{width:6px;height:6px;border-radius:50%;background:var(--g);box-shadow:0 0 8px var(--g);animation:bth 2.2s ease-in-out infinite}
+@keyframes bth{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* ══ HERO ══ */
+.hero{min-height:100vh;display:grid;grid-template-columns:1fr 420px;align-items:center;
+gap:4rem;padding:9rem 3.5rem 5rem;position:relative;z-index:1;overflow:hidden}
+.hblob{position:absolute;width:800px;height:800px;border-radius:50%;
+background:radial-gradient(ellipse,rgba(0,255,136,.055) 0%,transparent 65%);
+top:50%;left:35%;transform:translate(-50%,-50%);pointer-events:none;
+animation:hbpulse 7s ease-in-out infinite alternate}
+@keyframes hbpulse{from{transform:translate(-50%,-50%) scale(.95)}to{transform:translate(-50%,-50%) scale(1.1)}}
+.hblob2{position:absolute;width:400px;height:400px;border-radius:50%;
+background:radial-gradient(ellipse,rgba(77,184,255,.035) 0%,transparent 70%);
+bottom:10%;right:5%;pointer-events:none;animation:hbpulse 9s ease-in-out infinite}
+
+.htag{font-size:.62rem;color:var(--g);letter-spacing:.2em;margin-bottom:1.4rem;
+display:flex;align-items:center;gap:.8rem;
+opacity:0;animation:su .5s ease forwards .1s}
+.htag::before{content:'';width:32px;height:1px;background:var(--g)}
+
+.hname{font-family:var(--serif);font-size:clamp(4.5rem,8.5vw,9rem);line-height:.88;
+letter-spacing:-.03em;color:var(--t3);margin-bottom:1.2rem;
+opacity:0;animation:su .65s ease forwards .25s}
+.hname em{font-style:italic;color:var(--g);letter-spacing:-.05em}
+
+.hrole{font-size:.78rem;color:var(--lo);letter-spacing:.1em;margin-bottom:2rem;
+border-left:2px solid var(--b2);padding-left:1rem;line-height:2;
+opacity:0;animation:su .65s ease forwards .4s}
+.hrole strong{color:var(--t1)}
+
+.hdesc{font-size:.82rem;color:var(--t);line-height:1.95;max-width:540px;margin-bottom:2.8rem;
+opacity:0;animation:su .65s ease forwards .55s}
+
+.hbtns{display:flex;gap:.9rem;flex-wrap:wrap;opacity:0;animation:su .65s ease forwards .7s}
+.btn{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;padding:.82rem 1.8rem;
+border-radius:2px;text-decoration:none;transition:all .25s;display:inline-flex;align-items:center;gap:.5rem;cursor:pointer}
+.btn-g{background:var(--g);color:#010f07;font-weight:700;border:1px solid var(--g)}
+.btn-g:hover{background:transparent;color:var(--g);box-shadow:0 0 28px rgba(0,255,136,.22)}
+.btn-o{background:transparent;color:var(--t);border:1px solid var(--b2)}
+.btn-o:hover{border-color:var(--g);color:var(--g)}
+
+/* hero right: code card */
+.hcard{background:var(--card);border:1px solid var(--b1);border-radius:10px;overflow:hidden;
+opacity:0;animation:fi .8s ease forwards 1s;box-shadow:0 40px 80px rgba(0,0,0,.6)}
+.hcard-bar{background:var(--b1);padding:.6rem 1rem;display:flex;align-items:center;gap:.5rem}
+.hcard-bar span{font-size:.58rem;color:var(--lo);margin-left:.3rem;letter-spacing:.1em}
+.dr{width:9px;height:9px;border-radius:50%;background:#ff5f57}
+.dy{width:9px;height:9px;border-radius:50%;background:#febc2e}
+.dg{width:9px;height:9px;border-radius:50%;background:#28c840}
+.hcard-body{padding:1.6rem 1.8rem;font-size:.68rem;line-height:2.1}
+.ck{color:var(--bl)} .cs{color:var(--g)} .cv{color:var(--am)} .cc{color:var(--lo);font-style:italic} .cn{color:var(--t1)}
+
+/* counter row */
+.hcounters{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;border-top:1px solid var(--b1)}
+.hcount{padding:1.2rem 1.5rem;background:var(--bg1);text-align:center}
+.hcount-n{font-family:var(--serif);font-size:2rem;font-style:italic;color:var(--g);line-height:1}
+.hcount-l{font-size:.55rem;color:var(--lo);letter-spacing:.15em;margin-top:.3rem;text-transform:uppercase}
+
+@keyframes su{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fi{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ SECTION ══ */
+section{padding:6.5rem 3.5rem;position:relative;z-index:1}
+.sl{display:flex;align-items:center;gap:1rem;margin-bottom:4rem}
+.sn{font-size:.58rem;color:var(--g);letter-spacing:.28em;white-space:nowrap}
+.st{font-family:var(--serif);font-size:2.8rem;color:var(--t3);letter-spacing:-.03em;line-height:1;font-style:italic}
+.sline{flex:1;height:1px;background:linear-gradient(to right,var(--b2),transparent)}
+
+/* ══ ABOUT ══ */
+#about{border-top:1px solid var(--b1);background:var(--bg1)}
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+.at p{font-size:.8rem;line-height:2.1;color:var(--t);margin-bottom:1.1rem}
+.at strong{color:var(--g)}
+.at .gh-btn{display:inline-flex;align-items:center;gap:.5rem;margin-top:.8rem;
+font-size:.65rem;color:var(--am);text-decoration:none;border-bottom:1px solid rgba(240,165,0,.4);padding-bottom:.1rem;transition:border-color .2s}
+.at .gh-btn:hover{border-color:var(--am)}
+
+.term{background:var(--card);border:1px solid var(--b1);border-radius:8px;overflow:hidden}
+.tbar{background:var(--b1);padding:.55rem 1rem;display:flex;align-items:center;gap:.45rem}
+.tbar-title{font-size:.58rem;color:var(--lo);margin-left:.3rem;letter-spacing:.1em}
+.tbody{padding:1.4rem 1.6rem;font-size:.66rem;line-height:2.2}
+.tp{color:var(--g)} .tk{color:var(--bl)} .tv{color:var(--am)} .tc{color:var(--lo);font-style:italic} .tok{color:var(--g)}
+
+/* ══ SKILLS ══ */
+#skills{border-top:1px solid var(--b1)}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+border:1px solid var(--b1);border-radius:8px;overflow:hidden}
+.sc{background:var(--card);padding:2rem 2rem 2.2rem;transition:background .2s;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+background:linear-gradient(to right,transparent,var(--g),transparent);transform:scaleX(0);transform-origin:center;transition:transform .4s}
+.sc:hover::before{transform:scaleX(1)}
+.sc:hover{background:var(--bg2)}
+.sch{font-size:.58rem;color:var(--g);letter-spacing:.22em;text-transform:uppercase;margin-bottom:1.3rem}
+.stags{display:flex;flex-wrap:wrap;gap:.5rem}
+.stag{font-size:.6rem;padding:.28rem .72rem;border:1px solid var(--b2);border-radius:2px;
+color:var(--t);letter-spacing:.06em;transition:all .2s}
+.stag:hover{border-color:var(--g);color:var(--g)}
+.stag.hi{color:var(--g);border-color:var(--b3);background:var(--gd)}
+
+/* ══ PROJECTS ══ */
+#projects{border-top:1px solid var(--b1);background:var(--bg1)}
+.plist{display:flex;flex-direction:column;gap:0;border:1px solid var(--b1);border-radius:10px;overflow:hidden}
+.pi{background:var(--card);border-bottom:1px solid var(--b1);cursor:pointer;transition:background .2s}
+.pi:last-child{border-bottom:none}
+.pi:hover,.pi.open{background:#0c1520}
+
+.ph{display:grid;grid-template-columns:56px 1fr 1fr auto auto;
+align-items:center;gap:1.5rem;padding:1.5rem 2.2rem;user-select:none}
+.pidx{font-size:.56rem;color:var(--lo);letter-spacing:.22em}
+.pnr{display:flex;flex-direction:column;gap:.25rem}
+.pname{font-family:var(--serif);font-size:1.3rem;color:var(--t2);letter-spacing:-.01em;line-height:1}
+.pshort{font-size:.6rem;color:var(--lo);letter-spacing:.05em}
+.ptechs{display:flex;gap:.4rem;flex-wrap:wrap}
+.ptag{font-size:.56rem;padding:.22rem .6rem;border-radius:12px;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.tpy{background:rgba(0,255,136,.07);color:var(--g);border:1px solid rgba(0,255,136,.2)}
+.tweb{background:rgba(77,184,255,.07);color:var(--bl);border:1px solid rgba(77,184,255,.2)}
+.terp{background:rgba(240,165,0,.07);color:var(--am);border:1px solid rgba(240,165,0,.2)}
+.twallet{background:rgba(255,68,102,.07);color:var(--re);border:1px solid rgba(255,68,102,.2)}
+.parr{font-size:.75rem;color:var(--lo);transition:transform .3s,color .25s}
+.pi.open .parr{transform:rotate(180deg);color:var(--g)}
+
+.pb{display:none;padding:0 2.2rem 2.5rem;grid-template-columns:1fr 320px;gap:2.5rem}
+.pi.open .pb{display:grid}
+
+.pdesc{font-size:.78rem;line-height:1.95;color:var(--t);margin-bottom:1.6rem}
+.flist{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.flist li{display:flex;align-items:flex-start;gap:.7rem;font-size:.7rem;color:var(--t);line-height:1.6}
+.flist li::before{content:'▸';color:var(--g);flex-shrink:0;margin-top:.05rem}
+.flist li strong{color:var(--t1)}
+
+.pstack{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:1.5rem}
+.pst{font-size:.58rem;padding:.25rem .65rem;border:1px solid var(--b2);border-radius:2px;color:var(--lo);letter-spacing:.08em}
+
+.pcode{background:var(--bg2);border:1px solid var(--b1);border-radius:7px;overflow:hidden;height:fit-content}
+.pcbar{background:var(--b1);padding:.5rem 1rem;display:flex;align-items:center;gap:.4rem}
+.pcbar-name{font-size:.56rem;color:var(--lo);margin-left:.3rem;letter-spacing:.1em}
+.pcbody{padding:1.2rem 1.4rem;font-size:.64rem;line-height:2.1}
+.pk{color:var(--bl)} .ps{color:var(--g)} .pv{color:var(--am)} .pc2{color:var(--lo);font-style:italic} .px{color:var(--t1)}
+
+/* ══ CONTACT ══ */
+#contact{border-top:1px solid var(--b1)}
+.cbox{max-width:720px;margin:0 auto;text-align:center}
+.ch{font-family:var(--serif);font-size:clamp(3rem,6.5vw,5.5rem);color:var(--t3);
+letter-spacing:-.04em;line-height:1.0;margin-bottom:1.4rem}
+.ch em{color:var(--g);font-style:italic}
+.csub{font-size:.76rem;color:var(--lo);line-height:1.9;margin-bottom:3rem}
+.crow{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.clink{display:flex;align-items:center;gap:.55rem;font-size:.65rem;letter-spacing:.15em;
+text-transform:uppercase;text-decoration:none;padding:.85rem 1.7rem;
+border:1px solid var(--b2);border-radius:3px;color:var(--t);transition:all .25s}
+.clink:hover{border-color:var(--g);color:var(--g);box-shadow:0 0 22px rgba(0,255,136,.1)}
+
+/* ══ FOOTER ══ */
+footer{border-top:1px solid var(--b1);padding:1.6rem 3.5rem;
+display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.fc{font-size:.58rem;color:var(--lo);letter-spacing:.1em}
+.fc em{color:var(--g);font-style:normal}
+
+/* scrollbar */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--g)}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .hero{grid-template-columns:1fr;padding-top:8rem}
+  .hcard{display:none}
+  .ph{grid-template-columns:44px 1fr auto}
+  .ptechs{display:none}
+  .pb{grid-template-columns:1fr}
+}
+@media(max-width:800px){
+  nav{padding:.8rem 1.5rem} .nm{display:none} .ns{display:none}
+  section{padding:4rem 1.5rem}
+  .hero{padding:7rem 1.5rem 3rem}
+  .ag{grid-template-columns:1fr}
+  .sg{grid-template-columns:1fr 1fr}
+  footer{flex-direction:column;gap:.5rem;padding:1.2rem 1.5rem;text-align:center}
+}
+@media(max-width:520px){.sg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="c"></div><div id="cr"></div>
+<div class="gbg"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nl"><span>~/</span>henderson<span>·</span>dev</div>
+  <ul class="nm">
+    <li><a href="#about">about</a></li>
+    <li><a href="#skills">stack</a></li>
+    <li><a href="#projects">projects</a></li>
+    <li><a href="#contact">contact</a></li>
+  </ul>
+  <div class="ns"><div class="ns-dot"></div>open to work</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hblob"></div><div class="hblob2"></div>
+  <div>
+    <div class="htag">Backend Developer · Python Specialist</div>
+    <h1 class="hname">Henderson<br><em>Sánchez</em></h1>
+    <p class="hrole"><strong>Construyo el motor detrás de cada producto digital.</strong><br>
+    APIs · Sistemas CLI · Bases de datos · Lógica empresarial</p>
+    <p class="hdesc">Desarrollador Backend con foco en Python. He construido desde sistemas de autenticación hasta ERPs completos y wallets digitales. Me apasiona que el código sea limpio, que los datos sean seguros y que la lógica funcione.</p>
+    <div class="hbtns">
+      <a href="#projects" class="btn btn-g">Proyectos →</a>
+      <a href="https://github.com/Szhm1x" class="btn btn-o" target="_blank">GitHub @Szhm.1x</a>
+      <a href="#contact" class="btn btn-o">Contacto</a>
+    </div>
+  </div>
+  <div>
+    <div class="hcard">
+      <div class="hcard-bar"><div class="dr"></div><div class="dy"></div><div class="dg"></div><span>henderson.py</span></div>
+      <div class="hcard-body">
+        <div><span class="ck">class</span> <span class="cs">Developer</span>:</div>
+        <div>&nbsp;&nbsp;<span class="cc"># Henderson M. Sánchez H.</span></div>
+        <div>&nbsp;&nbsp;name &nbsp;&nbsp;&nbsp;= <span class="cv">"Henderson Sánchez"</span></div>
+        <div>&nbsp;&nbsp;github &nbsp;= <span class="cv">"@Szhm.1x"</span></div>
+        <div>&nbsp;&nbsp;role &nbsp;&nbsp;&nbsp;= <span class="cv">"Backend Dev"</span></div>
+        <div>&nbsp;</div>
+        <div>&nbsp;&nbsp;stack = [</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">"Python"</span>, <span class="cv">"FastAPI"</span>,</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">"Django"</span>, <span class="cv">"MySQL"</span>,</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">"PostgreSQL"</span>, <span class="cv">"PHP"</span></div>
+        <div>&nbsp;&nbsp;]</div>
+        <div>&nbsp;</div>
+        <div>&nbsp;&nbsp;projects &nbsp;= <span class="cn">6</span></div>
+        <div>&nbsp;&nbsp;available &nbsp;= <span class="ck">True</span> <span class="cc"># ← hire me</span></div>
+      </div>
+      <div class="hcounters">
+        <div class="hcount"><div class="hcount-n">6</div><div class="hcount-l">Proyectos</div></div>
+        <div class="hcount"><div class="hcount-n">3+</div><div class="hcount-l">Lenguajes</div></div>
+        <div class="hcount"><div class="hcount-n">∞</div><div class="hcount-l">Commits</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="sl"><span class="sn">01 ──</span><h2 class="st">Sobre mí</h2><div class="sline"></div></div>
+  <div class="ag">
+    <div class="at">
+      <p>Soy <strong>Henderson Mauricio Sánchez Herrera</strong>, desarrollador Backend con foco en el ecosistema Python. Construyo sistemas que resuelven problemas reales — desde autenticación hasta gestión empresarial completa.</p>
+      <p>Empecé con proyectos CLI que me enseñaron a pensar en <strong>arquitectura, persistencia y lógica de negocio</strong>. Cada proyecto me llevó al siguiente: un gestor de tareas me enseñó JSON y estructuras de datos; el Mini-ERP me enseñó modularidad; la wallet digital me llevó a <strong>MySQL y transacciones</strong>.</p>
+      <p>Hoy trabajo también con <strong>Django y FastAPI</strong> para APIs web modernas. Creo que el backend es donde vive la inteligencia real de un producto — y ahí es donde quiero construir.</p>
+      <a href="https://github.com/Szhm1x" class="gh-btn" target="_blank">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        github.com/Szhm1x
+      </a>
+    </div>
+    <div class="term">
+      <div class="tbar"><div class="dr"></div><div class="dy"></div><div class="dg"></div><span class="tbar-title">terminal</span></div>
+      <div class="tbody">
+        <div><span class="tp">❯</span> python -m henderson --info</div>
+        <div>&nbsp;</div>
+        <div><span class="tc">▸ Nombre &nbsp;&nbsp;&nbsp;:</span> Henderson M. Sánchez H.</div>
+        <div><span class="tc">▸ Rol &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</span> <span class="tok">Backend Developer</span></div>
+        <div><span class="tc">▸ GitHub &nbsp;&nbsp;:</span> <span class="tv">@Szhm.1x</span></div>
+        <div><span class="tc">▸ Stack &nbsp;&nbsp;&nbsp;:</span> Python, Django, FastAPI</div>
+        <div><span class="tc">▸ DB &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</span> PostgreSQL, MySQL</div>
+        <div><span class="tc">▸ Projects :</span> <span class="tok">6 completados</span></div>
+        <div><span class="tc">▸ Status &nbsp;&nbsp;:</span> <span class="tok">● disponible</span></div>
+        <div>&nbsp;</div>
+        <div><span class="tp">❯</span> <span class="tk">_</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="sl"><span class="sn">02 ──</span><h2 class="st">Stack técnico</h2><div class="sline"></div></div>
+  <div class="sg">
+    <div class="sc">
+      <div class="sch">// Lenguajes</div>
+      <div class="stags">
+        <span class="stag hi">Python</span>
+        <span class="stag hi">SQL</span>
+        <span class="stag">PHP</span>
+        <span class="stag">HTML/CSS</span>
+        <span class="stag">Bash</span>
+      </div>
+    </div>
+    <div class="sc">
+      <div class="sch">// Frameworks</div>
+      <div class="stags">
+        <span class="stag hi">FastAPI</span>
+        <span class="stag hi">Django</span>
+        <span class="stag">DRF</span>
+        <span class="stag">Pydantic</span>
+      </div>
+    </div>
+    <div class="sc">
+      <div class="sch">// Bases de datos</div>
+      <div class="stags">
+        <span class="stag hi">MySQL</span>
+        <span class="stag hi">PostgreSQL</span>
+        <span class="stag">SQLAlchemy</span>
+        <span class="stag">JSON</span>
+      </div>
+    </div>
+    <div class="sc">
+      <div class="sch">// Herramientas</div>
+      <div class="stags">
+        <span class="stag">Git & GitHub</span>
+        <span class="stag">XAMPP</span>
+        <span class="stag">Postman</span>
+        <span class="stag">JWT</span>
+        <span class="stag">Linux</span>
+      </div>
+    </div>
+    <div class="sc">
+      <div class="sch">// Paradigmas</div>
+      <div class="stags">
+        <span class="stag">REST APIs</span>
+        <span class="stag">CRUD</span>
+        <span class="stag">Auth & Sessions</span>
+        <span class="stag">Transacciones</span>
+        <span class="stag">CLI avanzado</span>
+      </div>
+    </div>
+    <div class="sc">
+      <div class="sch">// Aprendiendo</div>
+      <div class="stags">
+        <span class="stag">Docker</span>
+        <span class="stag">Redis</span>
+        <span class="stag">CI/CD</span>
+        <span class="stag">Testing</span>
+        <span class="stag">AWS</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="sl"><span class="sn">03 ──</span><h2 class="st">Proyectos</h2><div class="sline"></div></div>
+  <div class="plist">
+
+    <!-- PRJ-001 Login -->
+    <div class="pi" onclick="tog(this)">
+      <div class="ph">
+        <span class="pidx">001</span>
+        <div class="pnr">
+          <span class="pname">Sistema de Login</span>
+          <span class="pshort">Autenticación y registro con persistencia en archivo</span>
+        </div>
+        <div class="ptechs">
+          <span class="ptag tpy">Python</span>
+          <span class="ptag tpy">CLI</span>
+        </div>
+        <span class="parr">▾</span>
+      </div>
+      <div class="pb">
+        <div>
+          <p class="pdesc">Sistema de autenticación completo en consola. Permite registrar usuarios, iniciar sesión y validar credenciales con control de errores. Los datos se mantienen persistentes entre ejecuciones usando archivos de texto estructurados — la base de todo sistema de usuarios.</p>
+          <ul class="flist">
+            <li>Registro de nuevos usuarios con validación de campos</li>
+            <li>Login con verificación de credenciales y manejo de errores</li>
+            <li>Control de usuarios duplicados en el sistema</li>
+            <li>Persistencia de usuarios en archivos <code>.txt</code></li>
+            <li>Flujo de menú interactivo en consola</li>
+          </ul>
+          <div class="pstack">
+            <span class="pst">Python</span><span class="pst">File I/O</span>
+            <span class="pst">Archivos .txt</span><span class="pst">CLI</span>
+          </div>
+        </div>
+        <div class="pcode">
+          <div class="pcbar"><div class="dr"></div><div class="dy"></div><div class="dg"></div><span class="pcbar-name">auth.py</span></div>
+          <div class="pcbody">
+            <div><span class="pk">def</span> <span class="ps">register</span>(user, pwd):</div>
+            <div>&nbsp;&nbsp;<span class="pc2"># Valida & guarda</span></div>
+            <div>&nbsp;&nbsp;<span class="pk">if</span> user_exists(user):</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="pk">return</span> <span class="pv">False</span></div>
+            <div>&nbsp;&nbsp;<span class="pk">with</span> <span class="ps">open</span>(<span class="pv">"users.txt"</span>,<span class="pv">"a"</span>) <span class="pk">as</span> f:</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;f.write(<span class="pv">f"{user}:{pwd}\n"</span>)</div>
+            <div>&nbsp;&nbsp;<span class="pk">return</span> <span class="pv">True</span></div>
+            <div>&nbsp;</div>
+            <div><span class="pk">def</span> <span class="ps">login</span>(user, pwd):</div>
+            <div>&nbsp;&nbsp;<span class="pk">return</span> validate(user, pwd)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRJ-002 Notas -->
+    <div class="pi" onclick="tog(this)">
+      <div class="ph">
+        <span class="pidx">002</span>
+        <div class="pnr">
+          <span class="pname">Bloc de Notas</span>
+          <span class="pshort">CRUD completo de notas con almacenamiento persistente</span>
+        </div>
+        <div class="ptechs">
+          <span class="ptag tpy">Python</span>
+          <span class="ptag tpy">CLI</span>
+        </div>
+        <span class="parr">▾</span>
+      </div>
+      <div class="pb">
+        <div>
+          <p class="pdesc">Gestor de notas en consola con implementación CRUD completa. Crea, visualiza, edita y elimina notas de forma persistente. Diseñado con menús navegables y una estructura clara que organiza la información de forma eficiente en archivos de texto.</p>
+          <ul class="flist">
+            <li>Crear notas con título y contenido libre</li>
+            <li>Listar todas las notas disponibles con índices</li>
+            <li>Editar el contenido de notas existentes</li>
+            <li>Eliminar notas con confirmación de usuario</li>
+            <li>Guardado automático y recuperación desde <code>.txt</code></li>
+          </ul>
+          <div class="pstack">
+            <span class="pst">Python</span><span class="pst">CRUD</span>
+            <span class="pst">Archivos .txt</span><span class="pst">Menús CLI</span>
+          </div>
+        </div>
+        <div class="pcode">
+          <div class="pcbar"><div class="dr"></div><div class="dy"></div><div class="dg"></div><span class="pcbar-name">notas.py</span></div>
+          <div class="pcbody">
+            <div><span class="pc2"># CRUD de notas</span></div>
+            <div><span class="pk">def</span> <span class="ps">create</span>(title, body):</div>
+            <div>&nbsp;&nbsp;notes.append({</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="pv">"title"</span>: title,</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="pv">"body"</span>: body</div>
+            <div>&nbsp;&nbsp;})</div>
+            <div>&nbsp;&nbsp;save(notes)</div>
+            <div>&nbsp;</div>
+            <div><span class="pk">def</span> <span class="ps">edit</span>(i, new_body):</div>
+            <div>&nbsp;&nbsp;notes[i][<span class="pv">"body"</span>] = new_body</div>
+            <div>&nbsp;&nbsp;save(notes)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRJ-003 Tareas -->
+    <div class="pi" onclick="tog(this)">
+      <div class="ph">
+        <span class="pidx">003</span>
+        <div class="pnr">
+          <span class="pname">Gestor de Tareas</span>
+          <span class="pshort">Sistema avanzado con prioridades, filtros y estadísticas</span>
+        </div>
+        <div class="ptechs">
+          <span class="ptag tpy">Python</span>
+          <span class="ptag tpy">JSON</span>
+        </div>
+        <span class="parr">▾</span>
+      </div>
+      <div class="pb">
+        <div>
+          <p class="pdesc">Gestor de tareas avanzado que va mucho más allá de un CRUD básico. Incluye sistema de prioridades, búsqueda y filtrado dinámico, estadísticas de productividad y persistencia total con JSON. El proyecto que marcó el salto hacia estructuras de datos más complejas.</p>
+          <ul class="flist">
+            <li>Agregar, editar y eliminar tareas con validación</li>
+            <li>Marcar tareas como completadas o pendientes</li>
+            <li><strong>Sistema de prioridades:</strong> Alta, Media, Baja</li>
+            <li>Búsqueda por texto y filtrado por estado / prioridad</li>
+            <li>Dashboard de estadísticas: completadas, pendientes, %</li>
+            <li>Persistencia total del estado en JSON</li>
+          </ul>
+          <div class="pstack">
+            <span class="pst">Python</span><span class="pst">JSON</span>
+            <span class="pst">Diccionarios</span><span class="pst">Filtros</span><span class="pst">Estadísticas</span>
+          </div>
+        </div>
+        <div class="pcode">
+          <div class="pcbar"><div class="dr"></div><div class="dy"></div><div class="dg"></div><span class="pcbar-name">tasks.py</span></div>
+          <div class="pcbody">
+            <div><span class="pc2"># Estructura de tarea</span></div>
+            <div>task = {</div>
+            <div>&nbsp;&nbsp;<span class="pv">"id"</span>: uuid4(),</div>
+            <div>&nbsp;&nbsp;<span class="pv">"title"</span>: <span class="pv">"..."</span>,</div>
+            <div>&nbsp;&nbsp;<span class="pv">"priority"</span>: <span class="pv">"HIGH"</span>,</div>
+            <div>&nbsp;&nbsp;<span class="pv">"done"</span>: <span class="pk">False</span></div>
+            <div>}</div>
+            <div>&nbsp;</div>
+            <div><span class="pk">def</span> <span class="ps">stats</span>():</div>
+            <div>&nbsp;&nbsp;done = <span class="ps">sum</span>(t[<span class="pv">"done"</span>] <span class="pk">for</span> t <span class="pk">in</span> tasks)</div>
+            <div>&nbsp;&nbsp;<span class="pk">return</span> {<span class="pv">"done"</span>: done, <span class="pv">"pct"</span>: done/<span class="ps">len</span>(tasks)}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRJ-004 Reseveit -->
+    <div class="pi" onclick="tog(this)">
+      <div class="ph">
+        <span class="pidx">004</span>
+        <div class="pnr">
+          <span class="pname">Reseveit</span>
+          <span class="pshort">Sistema web fullstack de gestión de reservas</span>
+        </div>
+        <div class="ptechs">
+          <span class="ptag tweb">PHP</span>
+          <span class="ptag tweb">MySQL</span>
+          <span class="ptag tweb">Web</span>
+        </div>
+        <span class="parr">▾</span>
+      </div>
+      <div class="pb">
+        <div>
+          <p class="pdesc">Primera aplicación web fullstack: interfaz HTML/CSS, lógica en PHP y base de datos MySQL con XAMPP. Reseveit permite a los usuarios gestionar reservas en tiempo real desde el navegador. Fue el primer proyecto con stack web completo y base de datos relacional.</p>
+          <ul class="flist">
+            <li>Interfaz web completa con HTML y CSS</li>
+            <li>Creación y gestión de reservas desde el navegador</li>
+            <li>Persistencia de datos en MySQL a través de XAMPP</li>
+            <li>Lógica de servidor implementada en PHP</li>
+            <li>Formularios con validación de entradas</li>
+          </ul>
+          <div class="pstack">
+            <span class="pst">PHP</span><span class="pst">MySQL</span>
+            <span class="pst">HTML</span><span class="pst">CSS</span><span class="pst">XAMPP</span>
+          </div>
+        </div>
+        <div class="pcode">
+          <div class="pcbar"><div class="dr"></div><div class="dy"></div><div class="dg"></div><span class="pcbar-name">reserva.php</span></div>
+          <div class="pcbody">
+            <div><span class="pc2">// Conexión MySQL</span></div>
+            <div><span class="pk">$conn</span> = mysqli_connect(</div>
+            <div>&nbsp;&nbsp;<span class="pv">"localhost"</span>, <span class="pv">"root"</span>,</div>
+            <div>&nbsp;&nbsp;<span class="pv">""</span>, <span class="pv">"reseveit_db"</span></div>
+            <div>);</div>
+            <div>&nbsp;</div>
+            <div><span class="pc2">// Crear reserva</span></div>
+            <div><span class="pk">$q</span> = <span class="pv">"INSERT INTO reservas</span></div>
+            <div><span class="pv">&nbsp;(nombre, fecha, hora)</span></div>
+            <div><span class="pv">&nbsp;VALUES (?, ?, ?)"</span>;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRJ-005 Mini-ERP -->
+    <div class="pi" onclick="tog(this)">
+      <div class="ph">
+        <span class="pidx">005</span>
+        <div class="pnr">
+          <span class="pname">Mini-ERP</span>
+          <span class="pshort">Sistema empresarial — Inventario · Clientes · Ventas · Reportes</span>
+        </div>
+        <div class="ptechs">
+          <span class="ptag terp">Python</span>
+          <span class="ptag terp">JSON</span>
+          <span class="ptag terp">ERP</span>
+        </div>
+        <span class="parr">▾</span>
+      </div>
+      <div class="pb">
+        <div>
+          <p class="pdesc">Proyecto más complejo hasta la fecha: un ERP (Enterprise Resource Planning) completo en consola. Gestiona de forma integrada inventario, clientes, ventas y reportes. Al crear una venta, el stock se descuenta automáticamente. Toda la lógica empresarial en Python puro con JSON.</p>
+          <ul class="flist">
+            <li><strong>Inventario:</strong> agregar/editar productos y control de stock automático</li>
+            <li><strong>Clientes:</strong> registrar, listar y gestionar base de clientes</li>
+            <li><strong>Ventas:</strong> crear ventas con descuento automático de inventario</li>
+            <li><strong>Reportes:</strong> estadísticas de ventas, totales y métricas</li>
+            <li>Arquitectura modular — cada área en su propio módulo</li>
+            <li>Persistencia total del sistema con JSON</li>
+          </ul>
+          <div class="pstack">
+            <span class="pst">Python</span><span class="pst">JSON</span>
+            <span class="pst">Módulos</span><span class="pst">Lógica empresarial</span>
+            <span class="pst">Reportes</span><span class="pst">CLI avanzado</span>
+          </div>
+        </div>
+        <div class="pcode">
+          <div class="pcbar"><div class="dr"></div><div class="dy"></div><div class="dg"></div><span class="pcbar-name">erp/ventas.py</span></div>
+          <div class="pcbody">
+            <div><span class="pc2"># Crear venta + descontar stock</span></div>
+            <div><span class="pk">def</span> <span class="ps">crear_venta</span>(prod_id, qty):</div>
+            <div>&nbsp;&nbsp;prod = inventario[prod_id]</div>
+            <div>&nbsp;&nbsp;<span class="pk">if</span> prod[<span class="pv">"stock"</span>] &lt; qty:</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="pk">raise</span> <span class="px">StockError</span>()</div>
+            <div>&nbsp;&nbsp;prod[<span class="pv">"stock"</span>] -= qty</div>
+            <div>&nbsp;&nbsp;ventas.append({</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="pv">"prod"</span>: prod_id,</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="pv">"qty"</span>: qty,</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="pv">"total"</span>: prod[<span class="pv">"precio"</span>] * qty</div>
+            <div>&nbsp;&nbsp;})</div>
+            <div>&nbsp;&nbsp;guardar_todo()</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRJ-006 Wallet -->
+    <div class="pi" onclick="tog(this)">
+      <div class="ph">
+        <span class="pidx">006</span>
+        <div class="pnr">
+          <span class="pname">Wallet Digital</span>
+          <span class="pshort">Sistema financiero con transferencias y base de datos MySQL</span>
+        </div>
+        <div class="ptechs">
+          <span class="ptag twallet">Python</span>
+          <span class="ptag twallet">MySQL</span>
+          <span class="ptag twallet">Fintech</span>
+        </div>
+        <span class="parr">▾</span>
+      </div>
+      <div class="pb">
+        <div>
+          <p class="pdesc">Billetera digital completa con Python y MySQL. El proyecto más cercano a un sistema financiero real: maneja cuentas de usuario, operaciones de depósito y retiro, transferencias entre cuentas y un historial completo de transacciones. Primer uso de MySQL con Python para operaciones críticas de datos.</p>
+          <ul class="flist">
+            <li>Crear cuentas de usuario con saldo inicial en MySQL</li>
+            <li>Depósitos y retiros con validación de saldo disponible</li>
+            <li>Transferencias entre usuarios con integridad de datos</li>
+            <li>Historial completo de transacciones por cuenta</li>
+            <li>Consulta de saldo en tiempo real desde la base de datos</li>
+            <li>Control de errores: fondos insuficientes, cuenta inexistente</li>
+          </ul>
+          <div class="pstack">
+            <span class="pst">Python</span><span class="pst">MySQL</span>
+            <span class="pst">Transacciones</span><span class="pst">Finanzas</span>
+            <span class="pst">CLI</span><span class="pst">CRUD</span>
+          </div>
+        </div>
+        <div class="pcode">
+          <div class="pcbar"><div class="dr"></div><div class="dy"></div><div class="dg"></div><span class="pcbar-name">wallet.py</span></div>
+          <div class="pcbody">
+            <div><span class="pc2"># Transferencia entre cuentas</span></div>
+            <div><span class="pk">def</span> <span class="ps">transferir</span>(origen, destino, monto):</div>
+            <div>&nbsp;&nbsp;saldo = get_saldo(origen)</div>
+            <div>&nbsp;&nbsp;<span class="pk">if</span> saldo &lt; monto:</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="pk">raise</span> <span class="px">FondosInsuficientes</span>()</div>
+            <div>&nbsp;&nbsp;cursor.execute(</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="pv">"UPDATE cuentas SET saldo =</span></div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="pv">saldo - %s WHERE id = %s"</span>,</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;[monto, origen]</div>
+            <div>&nbsp;&nbsp;)</div>
+            <div>&nbsp;&nbsp;depositar(destino, monto)</div>
+            <div>&nbsp;&nbsp;log_transaccion(origen, destino, monto)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="cbox">
+    <h2 class="ch">¿Construimos algo<br><em>juntos?</em></h2>
+    <p class="csub">Estoy disponible para proyectos freelance, colaboraciones y oportunidades laborales. Si buscas un backend developer comprometido con código limpio y sistemas que funcionan — hablemos.</p>
+    <div class="crow">
+      <a href="https://github.com/Szhm1x" class="clink" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub @Szhm.1x
+      </a>
+      <a href="mailto:henderson@email.com" class="clink">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Enviar email
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fc">© 2025 <em>Henderson M. Sánchez Herrera</em> — Backend Developer</div>
+  <div class="fc">Built with <em>Python</em> in mind · <em>@Szhm.1x</em></div>
+</footer>
+
+<script>
+// Cursor
+const c=document.getElementById('c'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;c.style.left=mx+'px';c.style.top=my+'px'});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(loop)})();
+document.querySelectorAll('a,button,.pi').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{c.style.width='14px';c.style.height='14px';cr.style.width='48px';cr.style.height='48px';cr.style.opacity='.6'});
+  el.addEventListener('mouseleave',()=>{c.style.width='8px';c.style.height='8px';cr.style.width='32px';cr.style.height='32px';cr.style.opacity='.3'});
+});
+
+// Toggle projects
+function tog(el){
+  const was=el.classList.contains('open');
+  document.querySelectorAll('.pi').forEach(i=>i.classList.remove('open'));
+  if(!was)el.classList.add('open');
+}
+
+// Scroll reveal
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)'}})
+},{threshold:.07});
+document.querySelectorAll('.sc,.pi,.at,.term,.cbox').forEach((el,i)=>{
+  el.style.opacity='0';
+  el.style.transform='translateY(14px)';
+  el.style.transition=`opacity .55s ease ${i*.05}s, transform .55s ease ${i*.05}s`;
+  obs.observe(el);
+});
+</script>
+</body>
+</html>
